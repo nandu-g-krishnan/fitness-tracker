@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import{FormsModule} from '@angular/forms';
+import{FormsModule,ReactiveFormsModule} from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,6 +15,10 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AuthService } from './auth/auth.service';
 import { StopTrainingComponent } from './training/current-training/stop-training.component';
+import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
+import { HeaderComponent } from './navigation/header/header.component';
+import { TrainingService } from './training/training.service';
+
 
 @NgModule({
   declarations: [
@@ -26,7 +30,9 @@ import { StopTrainingComponent } from './training/current-training/stop-training
     NewTrainingComponent,
     PastTrainingComponent,
     WelcomeComponent,
-    StopTrainingComponent
+    StopTrainingComponent,
+    SidenavListComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -34,9 +40,10 @@ import { StopTrainingComponent } from './training/current-training/stop-training
     BrowserAnimationsModule,
     MaterialModule,
     FlexLayoutModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
-  providers: [AuthService],
+  providers: [AuthService,TrainingService],
   bootstrap: [AppComponent],
   entryComponents:[StopTrainingComponent]
 })
