@@ -5,6 +5,9 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { TrainingService } from '../training/training.service';
+import { MatSnackBar } from '@angular/material';
+import { UISerice } from '../shared/ui.service';
+import { flatMap } from 'rxjs/operators';
 
 
 @Injectable()
@@ -14,7 +17,9 @@ export class AuthService{
     private isAuthenticated = false ;
 
     constructor(private router:Router, private afAuth: AngularFireAuth,
-        private trainingService: TrainingService){}
+        private trainingService: TrainingService,
+        private matsnackbar:MatSnackBar,
+        private uiSerice:UISerice){}
 
    initAuthListener(){
     this.afAuth.authState.subscribe(user => {
@@ -34,25 +39,31 @@ export class AuthService{
 
 
     registerUser(authData: AuthData){
+        this.uiSerice.loadingStateChanged.next(true);
         this.afAuth.auth
         .createUserWithEmailAndPassword(
             authData.email,authData.password)
             .then(result=> {
                 console.log(result);
+                this.uiSerice.loadingStateChanged.next(false);
             })
             .catch(error =>{
-                console.log(error);
+                this.uiSerice.loadingStateChanged.next(false);
+                this.uiSerice.showSnackbar(error.message,null,3000)
+               
             })
        
     }
 
     login(authData: AuthData){
+        this.uiSerice.loadingStateChanged.next(true);
         this.afAuth.auth.signInWithEmailAndPassword(authData.email,authData.password)
         .then(result=> {
-            
+            this.uiSerice.loadingStateChanged.next(false);
         })
         .catch(error =>{
-            console.log(error);
+            this.uiSerice.loadingStateChanged.next(false);
+            this.uiSerice.showSnackbar(error.message,null,3000);
         })
     }
 

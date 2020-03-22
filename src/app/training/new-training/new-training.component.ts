@@ -5,23 +5,37 @@ import { map } from 'rxjs/operators';
 
 import { TrainingService } from '../training.service';
 import { Exercise } from '../exercise.model';
+import { UISerice } from '../../shared/ui.service';
 
 @Component({
   selector: 'app-new-training',
   templateUrl: './new-training.component.html',
   styleUrls: ['./new-training.component.css']
 })
-export class NewTrainingComponent implements OnInit {
+export class NewTrainingComponent implements OnInit, OnDestroy {
   
   exercises: Exercise[];
-  exerciseSubscription: Subscription;
+  isLoading = true;
+  private exerciseSubscription: Subscription;
+  private loadingSubscription: Subscription;
 
-  constructor(private trainingService: TrainingService) {}
+  constructor(private trainingService: TrainingService, private uiService: UISerice) {}
 
   ngOnInit() {
-    this.exerciseSubscription = this.trainingService.exercisesChanged.subscribe(
-      exercises => (this.exercises = exercises)
+    this.loadingSubscription = this.uiService.loadingStateChanged.subscribe(
+      isLoading => {
+        this.isLoading = isLoading;
+      }
     );
+    this.exerciseSubscription = this.trainingService.exercisesChanged.subscribe(
+      exercises => {
+        this.exercises = exercises;
+      }
+    );
+    this.fetchExercises();
+  }
+
+  fetchExercises() {
     this.trainingService.fetchAvailableExercises();
   }
 
@@ -30,6 +44,11 @@ export class NewTrainingComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.exerciseSubscription.unsubscribe();
+    if (this.exerciseSubscription) {
+      this.exerciseSubscription.unsubscribe();
+    }
+    if (this.loadingSubscription) {
+      this.loadingSubscription.unsubscribe();
+    }
   }
 }
